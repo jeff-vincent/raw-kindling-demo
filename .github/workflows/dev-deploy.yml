@@ -32,6 +32,7 @@ jobs:
           name: analytics
           context: "${{ github.workspace }}/analytics"
           image: "${{ env.REGISTRY }}/analytics:${{ env.TAG }}"
+          timeout: "900"
 
       - name: Build auth image
         uses: jeff-vincent/kindling/.github/actions/kindling-build@main
@@ -60,6 +61,7 @@ jobs:
           name: inventory
           context: "${{ github.workspace }}/inventory"
           image: "${{ env.REGISTRY }}/inventory:${{ env.TAG }}"
+          timeout: "900"
 
       - name: Build notifications image
         uses: jeff-vincent/kindling/.github/actions/kindling-build@main
@@ -74,6 +76,7 @@ jobs:
           name: orders
           context: "${{ github.workspace }}/orders"
           image: "${{ env.REGISTRY }}/orders:${{ env.TAG }}"
+          timeout: "900"
 
       - name: Build payments image
         uses: jeff-vincent/kindling/.github/actions/kindling-build@main
@@ -81,6 +84,7 @@ jobs:
           name: payments
           context: "${{ github.workspace }}/payments"
           image: "${{ env.REGISTRY }}/payments:${{ env.TAG }}"
+          timeout: "900"
 
       - name: Build pricing image
         uses: jeff-vincent/kindling/.github/actions/kindling-build@main
@@ -88,6 +92,7 @@ jobs:
           name: pricing
           context: "${{ github.workspace }}/pricing"
           image: "${{ env.REGISTRY }}/pricing:${{ env.TAG }}"
+          timeout: "900"
 
       - name: Build recommendations image
         uses: jeff-vincent/kindling/.github/actions/kindling-build@main
@@ -95,6 +100,7 @@ jobs:
           name: recommendations
           context: "${{ github.workspace }}/recommendations"
           image: "${{ env.REGISTRY }}/recommendations:${{ env.TAG }}"
+          timeout: "900"
 
       - name: Build reviews image
         uses: jeff-vincent/kindling/.github/actions/kindling-build@main
@@ -102,6 +108,7 @@ jobs:
           name: reviews
           context: "${{ github.workspace }}/reviews"
           image: "${{ env.REGISTRY }}/reviews:${{ env.TAG }}"
+          timeout: "900"
 
       - name: Build search image
         uses: jeff-vincent/kindling/.github/actions/kindling-build@main
@@ -123,6 +130,7 @@ jobs:
           name: streaming
           context: "${{ github.workspace }}/streaming"
           image: "${{ env.REGISTRY }}/streaming:${{ env.TAG }}"
+          timeout: "900"
 
       - name: Deploy analytics
         uses: jeff-vincent/kindling/.github/actions/kindling-deploy@main
