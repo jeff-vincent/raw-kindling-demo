@@ -7,7 +7,7 @@ RUN mix local.hex --force && mix local.rebar --force && mix deps.get --only prod
 COPY lib ./lib
 RUN mix compile && mix release
 
-FROM alpine:3.19
+FROM alpine:3.21
 RUN apk add --no-cache libstdc++ openssl ncurses-libs
 WORKDIR /app
 COPY --from=builder /app/_build/prod/rel/recommendations ./
