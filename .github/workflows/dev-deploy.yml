@@ -26,6 +26,8 @@ jobs:
                 /builds/*.log /builds/*.dest /builds/*.tar.gz \
                 /builds/*.yaml /builds/*.sh
 
+      # -- Build all images --
+
       - name: Build analytics image
         uses: jeff-vincent/kindling/.github/actions/kindling-build@main
         with:
@@ -55,14 +57,6 @@ jobs:
           context: "${{ github.workspace }}/gateway"
           image: "${{ env.REGISTRY }}/gateway:${{ env.TAG }}"
 
-      - name: Build inventory image
-        uses: jeff-vincent/kindling/.github/actions/kindling-build@main
-        with:
-          name: inventory
-          context: "${{ github.workspace }}/inventory"
-          image: "${{ env.REGISTRY }}/inventory:${{ env.TAG }}"
-          timeout: "900"
-
       - name: Build notifications image
         uses: jeff-vincent/kindling/.github/actions/kindling-build@main
         with:
@@ -86,28 +80,12 @@ jobs:
           image: "${{ env.REGISTRY }}/payments:${{ env.TAG }}"
           timeout: "900"
 
-      - name: Build pricing image
-        uses: jeff-vincent/kindling/.github/actions/kindling-build@main
-        with:
-          name: pricing
-          context: "${{ github.workspace }}/pricing"
-          image: "${{ env.REGISTRY }}/pricing:${{ env.TAG }}"
-          timeout: "900"
-
       - name: Build recommendations image
         uses: jeff-vincent/kindling/.github/actions/kindling-build@main
         with:
           name: recommendations
           context: "${{ github.workspace }}/recommendations"
           image: "${{ env.REGISTRY }}/recommendations:${{ env.TAG }}"
-          timeout: "900"
-
-      - name: Build reviews image
-        uses: jeff-vincent/kindling/.github/actions/kindling-build@main
-        with:
-          name: reviews
-          context: "${{ github.workspace }}/reviews"
-          image: "${{ env.REGISTRY }}/reviews:${{ env.TAG }}"
           timeout: "900"
 
       - name: Build search image
@@ -117,20 +95,7 @@ jobs:
           context: "${{ github.workspace }}/search"
           image: "${{ env.REGISTRY }}/search:${{ env.TAG }}"
 
-      - name: Build shipping image
-        uses: jeff-vincent/kindling/.github/actions/kindling-build@main
-        with:
-          name: shipping
-          context: "${{ github.workspace }}/shipping"
-          image: "${{ env.REGISTRY }}/shipping:${{ env.TAG }}"
-
-      - name: Build streaming image
-        uses: jeff-vincent/kindling/.github/actions/kindling-build@main
-        with:
-          name: streaming
-          context: "${{ github.workspace }}/streaming"
-          image: "${{ env.REGISTRY }}/streaming:${{ env.TAG }}"
-          timeout: "900"
+      # -- Deploy in dependency order --
 
       - name: Deploy analytics
         uses: jeff-vincent/kindling/.github/actions/kindling-deploy@main
@@ -160,37 +125,6 @@ jobs:
           image: "${{ env.REGISTRY }}/catalog:${{ env.TAG }}"
           port: "3002"
           ingress-host: "${{ github.actor }}-catalog.localhost"
-          health-check-path: "/health"
-          dependencies: |
-            - type: postgres
-
-      - name: Deploy gateway
-        uses: jeff-vincent/kindling/.github/actions/kindling-deploy@main
-        with:
-          name: "${{ github.actor }}-gateway"
-          image: "${{ env.REGISTRY }}/gateway:${{ env.TAG }}"
-          port: "8080"
-          ingress-host: "${{ github.actor }}-gateway.localhost"
-          health-check-path: "/health"
-          env: |
-            - name: CATALOG_URL
-              value: "http://${{ github.actor }}-catalog:3002"
-            - name: ORDERS_URL
-              value: "http://${{ github.actor }}-orders:3003"
-            - name: SEARCH_URL
-              value: "http://${{ github.actor }}-search:3006"
-            - name: INVENTORY_URL
-              value: "http://${{ github.actor }}-inventory:3010"
-            - name: REVIEWS_URL
-              value: "http://${{ github.actor }}-reviews:3012"
-
-      - name: Deploy inventory
-        uses: jeff-vincent/kindling/.github/actions/kindling-deploy@main
-        with:
-          name: "${{ github.actor }}-inventory"
-          image: "${{ env.REGISTRY }}/inventory:${{ env.TAG }}"
-          port: "3010"
-          ingress-host: "${{ github.actor }}-inventory.localhost"
           health-check-path: "/health"
           dependencies: |
             - type: postgres
@@ -229,17 +163,6 @@ jobs:
           dependencies: |
             - type: postgres
 
-      - name: Deploy pricing
-        uses: jeff-vincent/kindling/.github/actions/kindling-deploy@main
-        with:
-          name: "${{ github.actor }}-pricing"
-          image: "${{ env.REGISTRY }}/pricing:${{ env.TAG }}"
-          port: "3013"
-          ingress-host: "${{ github.actor }}-pricing.localhost"
-          health-check-path: "/health"
-          dependencies: |
-            - type: redis
-
       - name: Deploy recommendations
         uses: jeff-vincent/kindling/.github/actions/kindling-deploy@main
         with:
@@ -251,16 +174,6 @@ jobs:
             - type: redis
             - type: postgres
 
-      - name: Deploy reviews
-        uses: jeff-vincent/kindling/.github/actions/kindling-deploy@main
-        with:
-          name: "${{ github.actor }}-reviews"
-          image: "${{ env.REGISTRY }}/reviews:${{ env.TAG }}"
-          port: "3012"
-          ingress-host: "${{ github.actor }}-reviews.localhost"
-          dependencies: |
-            - type: mongodb
-
       - name: Deploy search
         uses: jeff-vincent/kindling/.github/actions/kindling-deploy@main
         with:
@@ -271,40 +184,33 @@ jobs:
           dependencies: |
             - type: elasticsearch
 
-      - name: Deploy shipping
+      - name: Deploy gateway
         uses: jeff-vincent/kindling/.github/actions/kindling-deploy@main
         with:
-          name: "${{ github.actor }}-shipping"
-          image: "${{ env.REGISTRY }}/shipping:${{ env.TAG }}"
-          port: "3011"
-          ingress-host: "${{ github.actor }}-shipping.localhost"
+          name: "${{ github.actor }}-gateway"
+          image: "${{ env.REGISTRY }}/gateway:${{ env.TAG }}"
+          port: "8080"
+          ingress-host: "${{ github.actor }}-gateway.localhost"
+          health-check-path: "/health"
+          env: |
+            - name: CATALOG_URL
+              value: "http://${{ github.actor }}-catalog:3002"
+            - name: ORDERS_URL
+              value: "http://${{ github.actor }}-orders:3003"
+            - name: SEARCH_URL
+              value: "http://${{ github.actor }}-search:3006"
           dependencies: |
-            - type: redis
-
-      - name: Deploy streaming
-        uses: jeff-vincent/kindling/.github/actions/kindling-deploy@main
-        with:
-          name: "${{ github.actor }}-streaming"
-          image: "${{ env.REGISTRY }}/streaming:${{ env.TAG }}"
-          port: "3009"
-          ingress-host: "${{ github.actor }}-streaming.localhost"
-          dependencies: |
-            - type: kafka
+            - type: postgres
 
       - name: Summary
         run: |
-          echo "🎉 Deploy complete!"
-          echo "🌐 Analytics: http://${{ github.actor }}-analytics.localhost"
-          echo "🌐 Auth: http://${{ github.actor }}-auth.localhost"
-          echo "🌐 Catalog: http://${{ github.actor }}-catalog.localhost"
-          echo "🌐 Gateway: http://${{ github.actor }}-gateway.localhost"
-          echo "🌐 Inventory: http://${{ github.actor }}-inventory.localhost"
-          echo "🌐 Notifications: http://${{ github.actor }}-notifications.localhost"
-          echo "🌐 Orders: http://${{ github.actor }}-orders.localhost"
-          echo "🌐 Payments: http://${{ github.actor }}-payments.localhost"
-          echo "🌐 Pricing: http://${{ github.actor }}-pricing.localhost"
-          echo "🌐 Recommendations: http://${{ github.actor }}-recommendations.localhost"
-          echo "🌐 Reviews: http://${{ github.actor }}-reviews.localhost"
-          echo "🌐 Search: http://${{ github.actor }}-search.localhost"
-          echo "🌐 Shipping: http://${{ github.actor }}-shipping.localhost"
-          echo "🌐 Streaming: http://${{ github.actor }}-streaming.localhost"
+          echo "Deploy complete!"
+          echo "Gateway:         http://${{ github.actor }}-gateway.localhost"
+          echo "Auth:            http://${{ github.actor }}-auth.localhost"
+          echo "Catalog:         http://${{ github.actor }}-catalog.localhost"
+          echo "Orders:          http://${{ github.actor }}-orders.localhost"
+          echo "Payments:        http://${{ github.actor }}-payments.localhost"
+          echo "Notifications:   http://${{ github.actor }}-notifications.localhost"
+          echo "Search:          http://${{ github.actor }}-search.localhost"
+          echo "Analytics:       http://${{ github.actor }}-analytics.localhost"
+          echo "Recommendations: http://${{ github.actor }}-recommendations.localhost"
