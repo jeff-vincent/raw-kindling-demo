@@ -1,5 +1,5 @@
 {
-    "name": "search-service",
+    "name": "kindling/search-service",
     "description": "Search service with Elasticsearch",
     "require": {
         "php": ">=8.2",

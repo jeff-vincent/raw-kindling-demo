@@ -35,8 +35,6 @@ func main() {
 	r.HandleFunc("/api/catalog", proxyHandler("CATALOG_URL", "/products")).Methods("GET")
 	r.HandleFunc("/api/orders", proxyHandler("ORDERS_URL", "/orders")).Methods("GET", "POST")
 	r.HandleFunc("/api/search", proxyHandler("SEARCH_URL", "/search")).Methods("GET")
-	r.HandleFunc("/api/inventory", proxyHandler("INVENTORY_URL", "/inventory")).Methods("GET")
-	r.HandleFunc("/api/reviews", proxyHandler("REVIEWS_URL", "/reviews")).Methods("GET")
 
 	port := os.Getenv("PORT")
 	if port == "" {
