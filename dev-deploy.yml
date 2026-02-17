@@ -27,6 +27,7 @@ jobs:
                 /builds/*.yaml /builds/*.sh
 
       # -- Build all images --
+
       - name: Build analytics image
         uses: jeff-vincent/kindling/.github/actions/kindling-build@main
         with:
@@ -95,6 +96,7 @@ jobs:
           image: "${{ env.REGISTRY }}/search:${{ env.TAG }}"
 
       # -- Deploy in dependency order --
+
       - name: Deploy analytics
         uses: jeff-vincent/kindling/.github/actions/kindling-deploy@main
         with:
@@ -105,8 +107,6 @@ jobs:
           health-check-path: "/health"
           dependencies: |
             - type: postgres
-          labels: |
-            app.kubernetes.io/part-of: raw-kindling-demo
 
       - name: Deploy auth
         uses: jeff-vincent/kindling/.github/actions/kindling-deploy@main
@@ -115,8 +115,6 @@ jobs:
           image: "${{ env.REGISTRY }}/auth:${{ env.TAG }}"
           port: "3001"
           ingress-host: "${{ github.actor }}-auth.localhost"
-          labels: |
-            app.kubernetes.io/part-of: raw-kindling-demo
           dependencies: |
             - type: redis
 
@@ -130,8 +128,6 @@ jobs:
           health-check-path: "/health"
           dependencies: |
             - type: postgres
-          labels: |
-            app.kubernetes.io/part-of: raw-kindling-demo
 
       - name: Deploy notifications
         uses: jeff-vincent/kindling/.github/actions/kindling-deploy@main
@@ -140,8 +136,6 @@ jobs:
           image: "${{ env.REGISTRY }}/notifications:${{ env.TAG }}"
           port: "3005"
           ingress-host: "${{ github.actor }}-notifications.localhost"
-          labels: |
-            app.kubernetes.io/part-of: raw-kindling-demo
           dependencies: |
             - type: redis
             - type: rabbitmq
@@ -157,8 +151,6 @@ jobs:
           dependencies: |
             - type: postgres
             - type: rabbitmq
-          labels: |
-            app.kubernetes.io/part-of: raw-kindling-demo
 
       - name: Deploy payments
         uses: jeff-vincent/kindling/.github/actions/kindling-deploy@main
@@ -170,8 +162,6 @@ jobs:
           health-check-path: "/health"
           dependencies: |
             - type: postgres
-          labels: |
-            app.kubernetes.io/part-of: raw-kindling-demo
 
       - name: Deploy recommendations
         uses: jeff-vincent/kindling/.github/actions/kindling-deploy@main
@@ -180,8 +170,6 @@ jobs:
           image: "${{ env.REGISTRY }}/recommendations:${{ env.TAG }}"
           port: "3008"
           ingress-host: "${{ github.actor }}-recommendations.localhost"
-          labels: |
-            app.kubernetes.io/part-of: raw-kindling-demo
           dependencies: |
             - type: redis
             - type: postgres
@@ -193,8 +181,6 @@ jobs:
           image: "${{ env.REGISTRY }}/search:${{ env.TAG }}"
           port: "3006"
           ingress-host: "${{ github.actor }}-search.localhost"
-          labels: |
-            app.kubernetes.io/part-of: raw-kindling-demo
           dependencies: |
             - type: elasticsearch
 
@@ -206,8 +192,6 @@ jobs:
           port: "8080"
           ingress-host: "${{ github.actor }}-gateway.localhost"
           health-check-path: "/health"
-          labels: |
-            app.kubernetes.io/part-of: raw-kindling-demo
           env: |
             - name: CATALOG_URL
               value: "http://${{ github.actor }}-catalog:3002"
@@ -217,3 +201,16 @@ jobs:
               value: "http://${{ github.actor }}-search:3006"
           dependencies: |
             - type: postgres
+
+      - name: Summary
+        run: |
+          echo "Deploy complete!"
+          echo "Gateway:         http://${{ github.actor }}-gateway.localhost"
+          echo "Auth:            http://${{ github.actor }}-auth.localhost"
+          echo "Catalog:         http://${{ github.actor }}-catalog.localhost"
+          echo "Orders:          http://${{ github.actor }}-orders.localhost"
+          echo "Payments:        http://${{ github.actor }}-payments.localhost"
+          echo "Notifications:   http://${{ github.actor }}-notifications.localhost"
+          echo "Search:          http://${{ github.actor }}-search.localhost"
+          echo "Analytics:       http://${{ github.actor }}-analytics.localhost"
+          echo "Recommendations: http://${{ github.actor }}-recommendations.localhost"
