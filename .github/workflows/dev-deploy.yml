@@ -217,3 +217,20 @@ jobs:
               value: "http://${{ github.actor }}-search:3006"
           dependencies: |
             - type: postgres
+<<<<<<< HEAD
+=======
+
+      - name: Summary
+        run: |
+          echo "Deploy complete!"
+          echo "Gateway:         http://${{ github.actor }}-gateway.localhost"
+          echo "Auth:            http://${{ github.actor }}-auth.localhost"
+          echo "Catalog:         http://${{ github.actor }}-catalog.localhost"
+          echo "Orders:          http://${{ github.actor }}-orders.localhost"
+          echo "Payments:        http://${{ github.actor }}-payments.localhost"
+          echo "Notifications:   http://${{ github.actor }}-notifications.localhost"
+          echo "Search:          http://${{ github.actor }}-search.localhost"
+          echo "Analytics:       http://${{ github.actor }}-analytics.localhost"
+          echo "Recommendations: http://${{ github.actor }}-recommendations.localhost"
+ 
+>>>>>>> refs/remotes/origin/main
