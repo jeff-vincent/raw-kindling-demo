@@ -214,3 +214,4 @@ jobs:
           echo "Search:          http://${{ github.actor }}-search.localhost"
           echo "Analytics:       http://${{ github.actor }}-analytics.localhost"
           echo "Recommendations: http://${{ github.actor }}-recommendations.localhost"
+ 
